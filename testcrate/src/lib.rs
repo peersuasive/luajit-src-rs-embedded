@@ -1,4 +1,9 @@
+extern crate rstest;
+
+use rstest::*;
+
 use std::os::raw::{c_char, c_int, c_long, c_void};
+
 
 extern "C" {
     pub fn luaL_newstate() -> *mut c_void;
@@ -13,7 +18,7 @@ pub unsafe fn lua_getglobal(state: *mut c_void, k: *const c_char) {
     lua_getfield(state, -10002 /* LUA_GLOBALSINDEX */, k);
 }
 
-#[test]
+#[rstest]
 fn test_lua() {
     use std::{ptr, slice};
     unsafe {
@@ -33,7 +38,7 @@ fn test_lua() {
     }
 }
 
-#[test]
+#[rstest]
 fn test_lua52compat() {
     use std::{ptr, slice};
     unsafe {
@@ -68,5 +73,44 @@ fn test_lua52compat() {
         assert_eq!(lua52compat, b"yes");
         #[cfg(not(feature = "lua52compat"))]
         assert_eq!(lua52compat, b"no");
+    }
+}
+
+#[rstest]
+// lfs
+#[case::lfs("
+    local lfs = require'lfs'
+    assert(lfs)
+    return true
+\0")]
+// posix
+#[case::posix("
+    local posix = require'rex_posix'
+    assert(posix)
+    return true
+\0")]
+// // tre
+// #[case::tre("
+//     local tre = require'rex_tre'
+//     assert(tre)
+//     return true
+// \0")]
+// tz
+#[case::tz("
+    local tz = require'tz'
+    assert(tz)
+    return true
+\0")]
+fn test_modules(#[case] code: String) {
+    unsafe {
+        let state = luaL_newstate();
+        assert!(! state.is_null() );
+
+        luaL_openlibs(state);
+
+        let ret1 = luaL_loadstring(state, code.as_ptr().cast());
+        assert_eq!(0, ret1);
+        let ret2 = lua_pcall(state, 0, 0, 0);
+        assert_eq!(0, ret2);
     }
 }

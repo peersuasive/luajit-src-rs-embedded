@@ -1,0 +1,8 @@
+*
+!.gitignore
+!Makefile
+!Makefile.dep
+!Makefile.extra
+!extra_lualib.h
+!extra_lib_init.c
+!lib_init.c

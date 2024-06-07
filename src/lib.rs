@@ -74,12 +74,17 @@ impl Build {
         let target = &self.target.as_ref().expect("TARGET not set")[..];
         let host = &self.host.as_ref().expect("HOST not set")[..];
         let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set");
-        let source_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("luajit2");
+        let source_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("luajit2-make");
+        let source_dir_bis = Path::new(env!("CARGO_MANIFEST_DIR")).join("luajit2");
+        let modules_sources = Path::new(env!("CARGO_MANIFEST_DIR")).join("modules");
+
         let build_dir = out_dir.join("build");
         let lib_dir = out_dir.join("lib");
         let include_dir = out_dir.join("include");
+        let modules_dir = out_dir.join("modules");
+        let luajit_dir = out_dir.join("luajit2");
 
-        for dir in &[&build_dir, &lib_dir, &include_dir] {
+        for dir in &[&build_dir, &lib_dir, &include_dir, &modules_dir, &luajit_dir] {
             if dir.exists() {
                 fs::remove_dir_all(dir)
                     .unwrap_or_else(|e| panic!("cannot remove {}: {}", dir.display(), e));
@@ -88,6 +93,8 @@ impl Build {
                 .unwrap_or_else(|e| panic!("cannot create {}: {}", dir.display(), e));
         }
         cp_r(&source_dir, &build_dir);
+        cp_r(&source_dir_bis, &luajit_dir);
+        cp_r(&modules_sources, &modules_dir);
 
         let mut cc = cc::Build::new();
         cc.target(target).host(host).warnings(false).opt_level(2);
@@ -159,6 +166,7 @@ impl Build {
                 panic!("cannot find {prefix}ar")
             };
             ar.push(" rcus");
+            ar.push(" 2>/dev/null");
             make.env("TARGET_AR", ar);
         }
 
@@ -187,19 +195,29 @@ impl Build {
         make.env("XCFLAGS", xcflags.join(" "));
         self.run_command(make, "building LuaJIT");
 
-        for f in &["lauxlib.h", "lua.h", "luaconf.h", "luajit.h", "lualib.h"] {
-            fs::copy(build_dir.join("src").join(f), include_dir.join(f)).unwrap();
+        for f in &["lauxlib.h", "lua.h", "luaconf.h", "lualib.h"] {
+            fs::copy(luajit_dir.join("src").join(f), include_dir.join(f)).unwrap_or_else(|_| panic!("Couldn't copy file {f}"));
         }
+
+        let f = &"luajit.h";
+        fs::copy(build_dir.join("src").join(f), include_dir.join(f)).unwrap_or_else(|_| panic!("Couldn't copy file {f}"));
+
         fs::copy(
             build_dir.join("src").join("libluajit.a"),
             lib_dir.join("libluajit-5.1.a"),
         )
         .unwrap();
 
+        // let l = &"/usr/lib/x86_64-linux-gnu/libtre.a";
+        // fs::copy(l, lib_dir.join("libtre.a")).unwrap_or_else(|_| panic!("Couldn't find lib {l}: please, run sudo apt install -y libtre-dev"));
+
         Artifacts {
             lib_dir,
             include_dir,
-            libs: vec!["luajit-5.1".to_string()],
+            libs: vec![
+                "luajit-5.1".to_string(),
+                //"tre".to_string(),
+            ],
         }
     }
 

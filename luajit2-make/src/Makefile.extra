@@ -1,0 +1,22 @@
+WITH_EXTRA_MODULES = 1
+
+## lfs
+CFLAGS_EXTRA += -I. -I../../modules/luafilesystem/src
+EXTRA_O += ../../modules/luafilesystem/src/lfs.o
+
+## lrexlib-posix / tre
+CFLAGS_EXTRA += -I. -I../../modules/lrexlib/src -DVERSION=\"2.9.2\"
+EXTRA_O += ../../modules/lrexlib/src/common.o
+# posix
+EXTRA_O += ../../modules/lrexlib/src/posix/lposix.o
+# # tre
+# # NOTE requires libtre-dev
+# EXTRA_O += ../../modules/lrexlib/src/tre/ltre.o
+# # get static lib
+# #EXTRA_LIBS += $(shell pkg-config --libs tre | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g')
+# EXTRA_LIBS += -L/usr/lib/x86_64-linux-gnu -l:libtre.a
+
+## lua-tz
+CFLAGS_EXTRA += -I. -I../../modules/lua-tz/src
+EXTRA_O += ../../modules/lua-tz/src/tz.o
+

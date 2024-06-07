@@ -2,3 +2,12 @@
 	path = luajit2
 	url = https://github.com/LuaJIT/LuaJIT.git
 	branch = v2.1
+[submodule "modules/lrexlib"]
+	path = modules/lrexlib
+	url = https://github.com/rrthomas/lrexlib
+[submodule "modules/luafilesystem"]
+	path = modules/luafilesystem
+	url = https://github.com/lunarmodules/luafilesystem
+[submodule "modules/lua-tz"]
+	path = modules/lua-tz
+	url = https://github.com/anaef/lua-tz

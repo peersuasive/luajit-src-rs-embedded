@@ -8,3 +8,6 @@ lua52compat = []
 
 [build-dependencies]
 luajit-src = { path = ".." }
+
+[dependencies]
+rstest = "0.21"
