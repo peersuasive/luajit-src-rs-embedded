@@ -1,11 +1,11 @@
 WITH_EXTRA_MODULES = 1
 
 ## lfs
-CFLAGS_EXTRA += -I. -I../../modules/luafilesystem/src
+CFLAGS_EXTRA += -I../../modules/luafilesystem/src
 EXTRA_O += ../../modules/luafilesystem/src/lfs.o
 
 ## lrexlib-posix / tre
-CFLAGS_EXTRA += -I. -I../../modules/lrexlib/src -DVERSION=\"2.9.2\"
+CFLAGS_EXTRA += -I../../modules/lrexlib/src -DVERSION=\"2.9.2\"
 EXTRA_O += ../../modules/lrexlib/src/common.o
 # posix
 EXTRA_O += ../../modules/lrexlib/src/posix/lposix.o
@@ -17,6 +17,5 @@ EXTRA_O += ../../modules/lrexlib/src/posix/lposix.o
 # EXTRA_LIBS += -L/usr/lib/x86_64-linux-gnu -l:libtre.a
 
 ## lua-tz
-CFLAGS_EXTRA += -I. -I../../modules/lua-tz/src
+CFLAGS_EXTRA += -I../../modules/lua-tz/src
 EXTRA_O += ../../modules/lua-tz/src/tz.o
-

@@ -12,6 +12,8 @@ extern "C" {
     pub fn lua_tolstring(state: *mut c_void, index: c_int, len: *mut c_long) -> *const c_char;
     pub fn luaL_loadstring(state: *mut c_void, s: *const c_char) -> c_int;
     pub fn lua_pcall(state: *mut c_void, nargs: c_int, nresults: c_int, errfunc: c_int) -> c_int;
+
+    pub fn luaL_embedded(state: *mut c_void);
 }
 
 pub unsafe fn lua_getglobal(state: *mut c_void, k: *const c_char) {
@@ -107,6 +109,7 @@ fn test_modules(#[case] code: String) {
         assert!(! state.is_null() );
 
         luaL_openlibs(state);
+        luaL_embedded(state);
 
         let ret1 = luaL_loadstring(state, code.as_ptr().cast());
         assert_eq!(0, ret1);

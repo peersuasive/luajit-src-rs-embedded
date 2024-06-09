@@ -19,6 +19,7 @@ pub struct Artifacts {
 #[derive(Default, Clone, Copy)]
 struct Options {
     lua52compat: bool,
+    embedded: bool,
 }
 
 impl Build {
@@ -49,6 +50,11 @@ impl Build {
 
     pub fn lua52compat(&mut self, enabled: bool) -> &mut Build {
         self.options.lua52compat = enabled;
+        self
+    }
+
+    pub fn embedded(&mut self, enabled: bool) -> &mut Build {
+        self.options.embedded = enabled;
         self
     }
 
@@ -190,17 +196,23 @@ impl Build {
         if self.options.lua52compat {
             xcflags.push("-DLUAJIT_ENABLE_LUA52COMPAT");
         }
+        if self.options.embedded {
+            make.env("WITH_EMBEDDED_MODULES", "1");
+        } else {
+            make.env("WITH_EMBEDDED_MODULES", "0");
+        }
 
         make.env("BUILDMODE", "static");
         make.env("XCFLAGS", xcflags.join(" "));
         self.run_command(make, "building LuaJIT");
 
-        for f in &["lauxlib.h", "lua.h", "luaconf.h", "lualib.h"] {
+        for f in &["lauxlib.h", "lua.h", "luaconf.h"] {
             fs::copy(luajit_dir.join("src").join(f), include_dir.join(f)).unwrap_or_else(|_| panic!("Couldn't copy file {f}"));
         }
 
-        let f = &"luajit.h";
-        fs::copy(build_dir.join("src").join(f), include_dir.join(f)).unwrap_or_else(|_| panic!("Couldn't copy file {f}"));
+        for f in &["luajit.h", "lualib.h"] {
+            fs::copy(build_dir.join("src").join(f), include_dir.join(f)).unwrap_or_else(|_| panic!("Couldn't copy file {f}"));
+        }
 
         fs::copy(
             build_dir.join("src").join("libluajit.a"),

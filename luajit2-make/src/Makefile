@@ -178,10 +178,15 @@ endif
 
 ################# EXTRA MODULES
 
+CFLAGS_EXTRA += -I.
+TARGET_CFLAGS += -I. -I$(LUAJIT_SRC) -Ihost
+ifeq ($(WITH_EMBEDDED_MODULES),1)
+
 -include Makefile.extra
 ifeq ($(WITH_EXTRA_MODULES),1)
-	TARGET_CFLAGS += -I. -I$(LUAJIT_SRC) -Ihost 
 	TARGET_CFLAGS += -D"WITH_EXTRA_MODULES=1"
+endif
+
 endif
 
 ################# END OF EXTRA MODULES
@@ -534,7 +539,7 @@ LJCORE_O= lj_assert.o lj_gc.o lj_err.o lj_char.o lj_bc.o lj_obj.o lj_buf.o \
 	  lj_lib.o lj_alloc.o lib_aux.o \
 	  $(LJLIB_O)
 
-LOCAL_O  = lib_init.o
+LOCAL_O = lib_init.o
 
 LJVMCORE_O= $(LJVM_O) $(LJCORE_O) $(LOCAL_O)
 LJVMCORE_DYNO= $(LJVMCORE_O:.o=_dyn.o)

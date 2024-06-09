@@ -16,7 +16,6 @@
 #include "lj_arch.h"
 
 #ifdef WITH_EXTRA_MODULES
-//#pragma message ( "!!!!!!!!!!!!!!!!!!!!!!!!C Preprocessor got here!!!!!!!!!!!!!!!!!!!!!!!" )
 #include "extra_lib_init.c"
 #endif
 
@@ -42,6 +41,21 @@ static const luaL_Reg lj_lib_preload[] = {
   { NULL,		NULL }
 };
 
+#ifdef WITH_EXTRA_MODULES
+LUALIB_API void luaL_embedded(lua_State *L) {
+  const luaL_Reg *lib;
+  luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
+		 sizeof(extra_lj_lib_load)/sizeof(extra_lj_lib_load[0])-1);
+
+  for (lib = extra_lj_lib_load; lib->func; lib++) {
+    lua_pushcfunction(L, lib->func);
+    lua_setfield(L, -2, lib->name);
+  }
+
+  lua_pop(L, 1);
+}
+#endif
+
 LUALIB_API void luaL_openlibs(lua_State *L)
 {
   const luaL_Reg *lib;
@@ -52,17 +66,7 @@ LUALIB_API void luaL_openlibs(lua_State *L)
   }
 
 #ifdef WITH_EXTRA_MODULES
-  luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
-		 sizeof(extra_lj_lib_load)/sizeof(extra_lj_lib_load[0])-1);
-
-  for (lib = extra_lj_lib_load; lib->func; lib++) {
-    lua_pushcfunction(L, lib->func);
-    lua_setfield(L, -2, lib->name);
-    //lua_pushstring(L, lib->name);
-    //lua_call(L, 1, 0);
-  }
-
-  lua_pop(L, 1);
+  luaL_embedded(L);
 #endif
 
   luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
