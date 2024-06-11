@@ -10,4 +10,4 @@
 	url = https://github.com/lunarmodules/luafilesystem
 [submodule "modules/lua-tz"]
 	path = modules/lua-tz
-	url = https://github.com/anaef/lua-tz
+	url = https://github.com/peersuasive/luajit-tz
