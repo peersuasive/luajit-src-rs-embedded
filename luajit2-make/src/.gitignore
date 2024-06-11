@@ -6,3 +6,4 @@
 !extra_lualib.h
 !extra_lib_init.c
 !lib_init.c
+!lualib.h
