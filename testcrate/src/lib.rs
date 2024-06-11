@@ -13,6 +13,7 @@ extern "C" {
     pub fn luaL_loadstring(state: *mut c_void, s: *const c_char) -> c_int;
     pub fn lua_pcall(state: *mut c_void, nargs: c_int, nresults: c_int, errfunc: c_int) -> c_int;
 
+    #[cfg(feature = "embedded")]
     pub fn luaL_embedded(state: *mut c_void);
 }
 
@@ -78,32 +79,34 @@ fn test_lua52compat() {
     }
 }
 
+#[cfg(not(feature = "embedded"))]
 #[rstest]
-// lfs
-#[case::lfs("
-    local lfs = require'lfs'
-    assert(lfs)
-    return true
-\0")]
-// posix
-#[case::posix("
-    local posix = require'rex_posix'
-    assert(posix)
-    return true
-\0")]
-// // tre
-// #[case::tre("
-//     local tre = require'rex_tre'
-//     assert(tre)
-//     return true
-// \0")]
-// tz
-#[case::tz("
-    local tz = require'tz'
-    assert(tz)
-    return true
-\0")]
-fn test_modules(#[case] code: String) {
+#[case::lfs("assert( require'lfs' )\0")]
+#[case::posix("assert( require'rex_posix' )\0")]
+#[case::tz("assert( require'tz' )\0")]
+#[should_panic]
+fn test_embedded_modules(#[case] code: String) {
+    unsafe {
+        let state = luaL_newstate();
+        assert!(! state.is_null() );
+
+        luaL_openlibs(state);
+
+        let ret1 = luaL_loadstring(state, code.as_ptr().cast());
+        assert_eq!(0, ret1);
+        let ret2 = lua_pcall(state, 0, 0, 0);
+        assert_eq!(0, ret2);
+    }
+}
+
+#[cfg(feature = "embedded")]
+#[rstest]
+#[case::lfs("assert( require'lfs' )\0")]
+#[case::posix("assert( require'rex_posix' )\0")]
+#[case::tz("assert( require'tz' )\0")]
+#[should_panic]
+#[case::lfs("assert( require'not_there' )\0")]
+fn test_embedded_modules(#[case] code: String) {
     unsafe {
         let state = luaL_newstate();
         assert!(! state.is_null() );

@@ -5,9 +5,10 @@ authors = ["Aleksandr Orlenko <zxteam@protonmail.com>"]
 
 [features]
 lua52compat = []
+embedded = []
 
 [build-dependencies]
-luajit-src = { path = ".." }
+luajit-src = { package = "luajit-src-embedded", path = ".." }
 
 [dependencies]
 rstest = "0.21"
