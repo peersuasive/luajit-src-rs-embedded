@@ -8,6 +8,6 @@
 [submodule "modules/luafilesystem"]
 	path = modules/luafilesystem
 	url = https://github.com/lunarmodules/luafilesystem
-[submodule "modules/lua-tz"]
-	path = modules/lua-tz
+[submodule "modules/luajit-tz"]
+	path = modules/luajit-tz
 	url = https://github.com/peersuasive/luajit-tz

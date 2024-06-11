@@ -1,4 +1,14 @@
-# luajit-src
+# luajit-src-embedded
+
+This a fork of [luajit-src](https://github.com/mlua-rs/luajit-src-rs) to allow embedding of C modules.
+
+Set up `Makefile.extra`, `extra_lib_init.c` and `extra_lualib.h`
+
+and compile with:
+
+```
+make WITH_EMBEDDED_MODULES=1
+```
 
 [![Build Status]][github-actions]
 
