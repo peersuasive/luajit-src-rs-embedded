@@ -643,7 +643,12 @@ E= @echo
 # Make targets.
 ##############################################################################
 
-default all:	$(TARGET_T)
+default all:	directories $(TARGET_T)
+
+BUILD_DIRS = host jit
+directories:
+	$(E) "Creating directories"
+	mkdir -p $(BUILD_DIRS)
 
 amalg:
 	$(MAKE) all "LJCORE_O=ljamalg.o"
@@ -669,7 +674,7 @@ depend:
 	  test -s $$file || $(HOST_RM) $$file; \
 	  done
 
-.PHONY: default all amalg clean libbc depend
+.PHONY: directories default all amalg clean libbc depend
 
 ##############################################################################
 # Rules for generated files.
