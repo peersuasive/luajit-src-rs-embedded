@@ -654,7 +654,7 @@ amalg:
 	$(MAKE) all "LJCORE_O=ljamalg.o"
 
 clean:
-	@$(HOST_RM) $(ALL_RM) $(EXTRA_O) modules/*/*.o modules/*/*/*.o
+	$(HOST_RM) $(ALL_RM) $(EXTRA_O) ../../modules/*/*.o ../../modules/*/*/*.o ../../modules/*/*/*/*.o
 
 libbc:
 	./$(LUAJIT_T) host/genlibbc.lua -o host/buildvm_libbc.h $(LJLIB_C)
